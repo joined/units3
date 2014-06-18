@@ -68,27 +68,27 @@ def parse_libretto(html_libretto):
     soup_libretto = BeautifulSoup(html_libretto)
 
     # List of of table rows I need
-    lista_righe = soup_libretto.find(
+    rows_list = soup_libretto.find(
         'table', {'class': 'detail_table'}).find_all('tr')
 
     a = []
 
     # Skip the first line, garbage
-    for riga in lista_righe[1:]:
+    for row in rows_list[1:]:
         # Verify if "voto - data" is present, they could be not
-        if riga.contents[10].string is not None:
-            voto_e_data = riga.contents[10].string.split(u'\u00a0-\u00a0')
+        if row.contents[10].string is not None:
+            voto_e_data = row.contents[10].string.split(u'\u00a0-\u00a0')
             voto = voto_e_data[0]
             data = voto_e_data[1]
         else:
             voto = None
             data = None
 
-        esame = {'anno_di_corso': riga.contents[1].string,
-                 'nome': riga.contents[2].string.split(' - ')[1],
-                 'codice': riga.contents[2].string.split(' - ')[0],
-                 'crediti': riga.contents[7].string,
-                 'anno_frequenza': riga.contents[9].string,
+        esame = {'anno_di_corso': row.contents[1].string,
+                 'nome': row.contents[2].string.split(' - ')[1],
+                 'codice': row.contents[2].string.split(' - ')[0],
+                 'crediti': row.contents[7].string,
+                 'anno_frequenza': row.contents[9].string,
                  'voto': voto,
                  'data': data}
 
@@ -102,29 +102,29 @@ def parse_tasse(html_tasse):
     soup_tasse = BeautifulSoup(html_tasse)
 
     # List of of table rows I need
-    lista_righe = soup_tasse.find(
+    rows_list = soup_tasse.find(
         'table', {'class': 'detail_table'}).find_all('tr')
 
     a = []
 
     # Skip the first line, garbage
-    for riga in lista_righe[1:]:
-        if len(riga.contents) > 3:
+    for row in rows_list[1:]:
+        if len(row.contents) > 3:
             # Convert to float the value
-            importo = float(riga.contents[6].string[2:].replace(',', '.'))
+            importo = float(row.contents[6].string[2:].replace(',', '.'))
 
             # If there's the green semaphore the fee is payed
-            if ('semaf_v' in str(riga.contents[7])):
+            if ('semaf_v' in str(row.contents[7])):
                 stato = 'pagato'
             # Otherwise not
             else:
                 stato = 'da_pagare'
 
-            tassa = {'codice_fattura': riga.contents[1].string,
-                     'codice_bollettino': riga.contents[2].string,
-                     'anno': riga.contents[3].string,
-                     'descrizione': riga.contents[4].string,
-                     'data_scadenza': riga.contents[5].string,
+            tassa = {'codice_fattura': row.contents[1].string,
+                     'codice_bollettino': row.contents[2].string,
+                     'anno': row.contents[3].string,
+                     'descrizione': row.contents[4].string,
+                     'data_scadenza': row.contents[5].string,
                      'importo': importo,
                      'stato': stato
                      }
