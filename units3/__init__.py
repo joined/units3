@@ -147,10 +147,7 @@ def auth_is_valid(auth_key):
         except TypeError:
             return False
 
-        if re.search(regex, decoded_key):
-            return True
-        else:
-            return False
+        return True if re.search(regex, decoded_key) else False
 
 
 # When used as decorator after route declaration,
