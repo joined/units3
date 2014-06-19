@@ -43,10 +43,7 @@ def get_user_cookie(user):
     cur = db.cursor()
     res = cur.execute('SELECT cookie FROM cookies WHERE user=?', (user,))
     cookie = res.fetchone()
-    if cookie is not None:
-        return cookie[0]
-    else:
-        return None
+    return cookie[0] if cookie is not None else None
 
 
 # Updates the cookie for a user if already there,
@@ -114,13 +111,10 @@ def parse_libretto(html_libretto):
     # Skip the first line, garbage
     for row in rows_list[1:]:
         # Verify if "voto - data" is present, they could be not
-        if row.contents[10].string is not None:
-            voto_e_data = row.contents[10].string.split(u'\u00a0-\u00a0')
-            voto = voto_e_data[0]
-            data = voto_e_data[1]
+        if row.contents[10].string is None:
+            voto, data = None, None
         else:
-            voto = None
-            data = None
+            voto, data = row.contents[10].string.split(u'\u00a0-\u00a0')
 
         esame = {'anno_di_corso': row.contents[1].string,
                  'nome': row.contents[2].string.split(' - ')[1],
