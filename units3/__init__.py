@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 app = Flask(__name__)
 
 DATABASE = 'db/database.db'
-# cookie = None
 
 # Base URL of Univ. of Trieste ESSE3 service
 baseurl = 'https://esse3.units.it/auth/studente/'
@@ -38,7 +37,6 @@ def connect_db():
 
 # Gets a user's cookie from db
 def get_user_cookie(user):
-    print("*get_user_cookie*")
     db = g.db
     cur = db.cursor()
     res = cur.execute('SELECT cookie FROM cookies WHERE user=?', (user,))
@@ -49,7 +47,6 @@ def get_user_cookie(user):
 # Updates the cookie for a user if already there,
 # otherwise inserts user+cookie in database
 def set_user_cookie(user, cookie):
-    print("*set_user_cookie* con cookie:" + cookie)
     db = g.db
     cur = db.cursor()
     cur.execute('INSERT OR IGNORE INTO cookies VALUES (?,?)', (user, cookie))
@@ -171,14 +168,14 @@ def auth_is_valid(auth_key):
     if auth_key is None:
         return False
     else:
-        # Check it's in the right format
-        regex = r'[a-z0-9]{1,}:[A-Z0-9]{1,}'
         try:
             decoded_key = base64.b64decode(auth_key)
         # If a TypeError is raised, the key is a mess
         except TypeError:
             return False
 
+        # Check it's in the right format
+        regex = r'[a-z0-9]{1,}:[A-Z0-9]{1,}'
         return True if re.search(regex, decoded_key) else False
 
 
@@ -192,8 +189,6 @@ def require_auth(func):
 # Does the auth check on every route with require_auth decorator
 @app.before_request
 def before_request(*args, **kwargs):
-    print('*richiesta ricevuta')
-
     g.db = connect_db()
 
     # By default, auth is not required
