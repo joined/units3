@@ -3,12 +3,14 @@
 import urllib2
 import base64
 import re
-from flask import Flask, jsonify, request, make_response
+import sqlite3
+from flask import Flask, jsonify, request, make_response, g
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
-cookie = None
+DATABASE = 'db/database.db'
+# cookie = None
 
 # Base URL of Univ. of Trieste ESSE3 service
 baseurl = 'https://esse3.units.it/auth/studente/'
@@ -29,18 +31,50 @@ class AuthError(Exception):
     pass
 
 
+# Gets the SQLite db
+def connect_db():
+    return sqlite3.connect(DATABASE)
+
+
+# Gets a user's cookie from db
+def get_user_cookie(user):
+    print("*get_user_cookie*")
+    db = g.db
+    cur = db.cursor()
+    res = cur.execute('SELECT cookie FROM cookies WHERE user=?', (user,))
+    cookie = res.fetchone()
+    if cookie is not None:
+        return cookie[0]
+    else:
+        return None
+
+
+# Updates the cookie for a user if already there,
+# otherwise inserts user+cookie in database
+def set_user_cookie(user, cookie):
+    print("*set_user_cookie* con cookie:" + cookie)
+    db = g.db
+    cur = db.cursor()
+    cur.execute('INSERT OR IGNORE INTO cookies VALUES (?,?)', (user, cookie))
+    cur.execute('UPDATE cookies SET cookie=? WHERE user=?', (cookie, user))
+    db.commit()
+
+
 # Gets page with HTTP basic auth setting cookies
 def get_page_with_auth(url, auth_key, first_try=True):
-    global cookie
+    user = base64.b64decode(auth_key).split(':')[0]
 
     u2_req = urllib2.Request(url)
 
     # Header for HTTP basic auth
     u2_req.add_header('Authorization', 'Basic ' + auth_key)
 
+    # Gets the user cookie from database
+    db_cookie = get_user_cookie(user)
+
     # Add cookie with JSESSIONID, if present
-    if cookie is not None:
-        u2_req.add_header('Cookie', cookie)
+    if db_cookie is not None:
+        u2_req.add_header('Cookie', db_cookie)
 
     try:
         response = urllib2.urlopen(u2_req)
@@ -53,9 +87,13 @@ def get_page_with_auth(url, auth_key, first_try=True):
                 raise AuthError()
 
             else:
-                # If it's the first time I try, I have to load
-                # the cookies
-                cookie = e.info().getheader('Set-Cookie')
+                # If it's the first time I try, I have to load the
+                # cookies in the database
+                cookie_to_set = e.info().getheader('Set-Cookie')
+
+                # It can be empty if auth data is wrong
+                if cookie_to_set is not None:
+                    set_user_cookie(user, cookie_to_set)
 
                 # Repeat function, reporting it's not the first try
                 return get_page_with_auth(url, auth_key, False)
@@ -160,7 +198,9 @@ def require_auth(func):
 # Does the auth check on every route with require_auth decorator
 @app.before_request
 def before_request(*args, **kwargs):
-    print('## RICHIESTA RICEVUTA ##')
+    print('*richiesta ricevuta')
+
+    g.db = connect_db()
 
     # By default, auth is not required
     auth_required = False
@@ -178,6 +218,13 @@ def before_request(*args, **kwargs):
 @app.errorhandler(404)
 def not_found(errore):
     return make_response(jsonify({'errore': 'Risorsa non trovata'}), 404)
+
+
+# Closes connection on app closing
+@app.teardown_request
+def teardown_request(exception):
+    if hasattr(g, 'db'):
+        g.db.close()
 
 
 # Route for "libretto" resource
@@ -204,6 +251,7 @@ def get_tasse():
         return jsonify({'errore': errors_text['dati_non_validi']})
     else:
         return jsonify({'tasse': parse_tasse(html_tasse)})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
