@@ -19,7 +19,7 @@ class Crawler:
     # Renews cookie
     def renew_cookie(self, first_try=True):
         headers = {
-            'User-Agent': 'Python/0.1',
+            'User-Agent': 'Python/3.4',
             'Authorization': 'Basic ' + self.auth_key
         }
 
@@ -54,7 +54,7 @@ class Crawler:
         return True if re.search(regex, str(decoded_key)) else False
 
     def resource_fetch(self, resource):
-        headers = {'User-Agent': 'Python/0.1'}
+        headers = {'User-Agent': 'Python/3.4'}
 
         # Add auth if needed
         if self.auth_key is not None:
