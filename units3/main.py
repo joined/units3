@@ -4,7 +4,7 @@ from units3.exceptions import AuthError
 from flask import Flask, jsonify, request, make_response
 
 __author__ = "Lorenzo Gasparini"
-__license__ = "GPLv3"
+__license__ = "GPLv2"
 __version__ = "0.1dev"
 __email__ = "joined@me.com"
 
