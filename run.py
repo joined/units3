@@ -1,11 +1,12 @@
 #!.env/bin/python
 # -*- coding: UTF-8 -*- #
-from units3.main import app
 import sys
 
 if not hasattr(sys, 'real_prefix'):
     print("Must run inside virtualenv.")
     sys.exit(1)
+
+from units3.main import app
 
 if __name__ == "__main__":
     import argparse
