@@ -3,5 +3,9 @@ Jinja2==2.7.3
 MarkupSafe==0.23
 Werkzeug==0.9.6
 beautifulsoup4==4.3.2
+# futures is needed just for python2
+futures==2.1.6
 itsdangerous==0.24
+six==1.7.3
 urllib3==1.9
+wsgiref==0.1.2
