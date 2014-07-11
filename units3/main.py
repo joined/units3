@@ -28,7 +28,7 @@ open_resources = {'home': '/Home.do'}
 
 # On 404 error
 @app.errorhandler(404)
-def not_found():
+def not_found(resource):
     """Return a JSON with error on 404, insted of ugly HTML"""
     return make_response(
         jsonify({'errore': 'Una o più risorse non trovate.'}),
