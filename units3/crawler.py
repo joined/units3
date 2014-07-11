@@ -1,6 +1,7 @@
 import urllib3
 import base64
 import re
+import six
 from units3.exceptions import AuthError
 from units3.parser import Parser
 from concurrent.futures import ThreadPoolExecutor
@@ -98,7 +99,7 @@ class Crawler:
         # Dict containing results to be parsed
         to_parse = {}
 
-        for (res_name, res_url) in self.resources.items():
+        for (res_name, res_url) in six.iteritems(self.resources):
             # If parser doesn't exist, say it
             if not hasattr(Parser, res_name):
                 results[res_name] = "Parser non implementato."
@@ -106,7 +107,7 @@ class Crawler:
                 to_parse[res_name] = res_url
 
         # Parallel mapping
-        responses = pool.map(self.resource_fetch, to_parse.items())
+        responses = pool.map(self.resource_fetch, six.iteritems(to_parse))
 
         for response in responses:
             res_name, res_data = response

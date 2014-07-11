@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import six
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
 from flask import Flask, jsonify, request, make_response
@@ -68,7 +69,7 @@ def get_protected():
     # Crawler-friendly dictionary of services to be retrieved
     resources = {res_name: res_url
                  for (res_name, res_url)
-                 in protected_resources.items()
+                 in six.iteritems(protected_resources)
                  if res_name in req_resources}
     try:
         crawler = Crawler(resources=resources, auth_key=auth_key)
@@ -99,7 +100,7 @@ def get_open():
     # Crawler-friendly dictionary of services to be retrieved
     resources = {res_name: res_url
                  for (res_name, res_url)
-                 in open_resources.items()
+                 in six.iteritems(open_resources)
                  if res_name in req_resources}
 
     crawler = Crawler(resources=resources)
