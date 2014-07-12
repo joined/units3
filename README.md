@@ -22,6 +22,16 @@ As simple as:
     $ ./run.py   # -h for the help
      * Running on http://127.0.0.1:5000/
 
+## Documentation
+I'm planning to write some sort of decent documentation once the project when the vast-majority
+of resources from ESSE3 will be available through this API.
+
+In the meanwhile, to understand how to use this project you can:
++ read the code
++ read the code
++ ~~email me~~ read the code
+
+
 ## Disclaimer
 This project IS NOT connected or affiliated in any way with the University of Trieste.
 
