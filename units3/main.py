@@ -2,6 +2,7 @@
 import six
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
+from urllib3.exceptions import MaxRetryError
 from flask import Flask, jsonify, request, make_response
 
 app = Flask(__name__)
@@ -26,7 +27,7 @@ open_resources = {'home': '/Home.do'}
 def not_found(e=None):
     """Return a JSON with error on 404, insted of ugly HTML"""
     return make_response(
-        jsonify({'errore': 'Una o più risorse non trovate.'}),
+        jsonify({'errore': u'Una o più risorse non trovate.'}),
         404)
 
 
@@ -35,6 +36,13 @@ def bad_auth():
     return make_response(
         jsonify({'errore': 'Autenticazione non valida.'}),
         401)
+
+
+def connection_error():
+    """Response for internal connection problem"""
+    return make_response(
+        jsonify({'errore': 'Problema di connessione con il servizio ESSE3'}),
+        500)
 
 
 @app.route('/protected/', methods=['GET'])
@@ -72,7 +80,13 @@ def get_protected():
         # On wrong auth info, 401!
         return bad_auth()
     else:
-        return jsonify(crawler.get_results())
+        # Check if the results were fetched
+        try:
+            results = crawler.get_results()
+        except MaxRetryError:
+            return connection_error()
+        else:
+            return jsonify(results)
 
 
 @app.route('/open/', methods=['GET'])
@@ -100,7 +114,13 @@ def get_open():
 
     crawler = Crawler(resources=resources)
 
-    return jsonify(crawler.get_results())
+    # Check if the results were fetched
+    try:
+        results = crawler.get_results()
+    except MaxRetryError:
+        return connection_error()
+    else:
+        return jsonify(results)
 
 
 @app.route('/protected/<resource>', methods=['GET'])
@@ -131,7 +151,13 @@ def get_single_protected(resource):
         # On wrong auth info, 401!
         return bad_auth()
     else:
-        return jsonify(crawler.get_results())
+        # Check if the results were fetched
+        try:
+            results = crawler.get_results()
+        except MaxRetryError:
+            return connection_error()
+        else:
+            return jsonify(results)
 
 
 @app.route('/open/<resource>', methods=['GET'])
@@ -151,4 +177,10 @@ def get_single_open(resource):
 
     crawler = Crawler(resources=friendly_resource)
 
-    return jsonify(crawler.get_results())
+    # Check if the results were fetched
+    try:
+        results = crawler.get_results()
+    except MaxRetryError:
+        return connection_error()
+    else:
+        return jsonify(results)
