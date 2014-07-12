@@ -28,7 +28,6 @@ of resources from ESSE3 will be available through this API.
 
 In the meanwhile, to understand how to use this project you can:
 + read the code
-+ read the code
 + ~~email me~~ read the code
 
 
