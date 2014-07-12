@@ -12,10 +12,10 @@ Why would you want to do that? Dunno, let's just say that ESSE3 website doesn't 
 
 ## License
 
-"THE BEER-WARE LICENSE" (Revision 42)
+"THE BEER-WARE LICENSE" (Revision 4.8.12)
 
 <joined@me.com> wrote every file in this repository.
-As long as you retain this notice you can do whatever you want with this stuff.
+You can do whatever you want with this stuff.
 If we meet some day, and you think this stuff is worth it, you can buy me a beer
 in return.
 
