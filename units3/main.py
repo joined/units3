@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import six
+from base64 import b64encode
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
 from urllib3.exceptions import MaxRetryError
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, jsonify, request, make_response, Response
+from functools import wraps
+
 
 app = Flask(__name__)
 
@@ -18,9 +21,6 @@ protected_resources = {
     'prove_parziali': '/auth/studente/Appelli/AppelliP.do'
 }
 
-# Resources that don't need it
-open_resources = {'bacheca_appelli': '/ListaAppelliOfferta.do'}
-
 
 # On 404 error
 @app.errorhandler(404)
@@ -31,21 +31,37 @@ def not_found(e=None):
         404)
 
 
-def bad_auth():
-    """Response for bad authentication info"""
-    return make_response(
-        jsonify({'errore': 'Autenticazione non valida.'}),
-        401)
+# Definition of requires_auth decorator
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if (not auth) or (not auth.username) or (not auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        "Could not verify your access level for that URL.\n"
+        "You have to login with proper credentials""",
+        401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+    )
 
 
 def connection_error():
     """Response for internal connection problem"""
     return make_response(
         jsonify({'errore': 'Problema di connessione con il servizio ESSE3'}),
-        500)
+        500
+    )
 
 
 @app.route('/protected/', methods=['GET'])
+@requires_auth
 def get_protected():
     """
     Route to get multiple protected resources at once.
@@ -62,12 +78,8 @@ def get_protected():
     if not set(protected_resources.keys()) >= set(req_resources):
         return not_found()
 
-    # Get auth_key sent via GET method
-    auth_key = request.args.get('auth_key')
-
-    # Check if auth_key was given, otherwise 401!
-    if auth_key is None:
-        return bad_auth()
+    auth = request.authorization
+    encoded_auth = b64encode(auth.username + ':' + auth.password)
 
     # Crawler-friendly dictionary of services to be retrieved
     resources = {res_name: res_url
@@ -75,10 +87,10 @@ def get_protected():
                  in six.iteritems(protected_resources)
                  if res_name in req_resources}
     try:
-        crawler = Crawler(resources=resources, auth_key=auth_key)
+        crawler = Crawler(resources=resources, auth_key=encoded_auth)
     except AuthError:
         # On wrong auth info, 401!
-        return bad_auth()
+        return authenticate()
     else:
         # Check if the results were fetched
         try:
@@ -89,41 +101,8 @@ def get_protected():
             return jsonify(results)
 
 
-@app.route('/open/', methods=['GET'])
-def get_open():
-    """
-    Route to get multiple open resources at once.
-    The querystring should be:
-    http://localhost/open/?resources=fist,second,third
-    """
-
-    # Get resources requested via GET method
-    req_resources = request.args.get('resources')
-    if ',' in req_resources:
-        req_resources = req_resources.split(',')
-
-    # If at least one of the resources requested doesn't exist, 404!
-    if not set(open_resources.keys()) >= set(req_resources):
-        return not_found()
-
-    # Crawler-friendly dictionary of services to be retrieved
-    resources = {res_name: res_url
-                 for (res_name, res_url)
-                 in six.iteritems(open_resources)
-                 if res_name in req_resources}
-
-    crawler = Crawler(resources=resources)
-
-    # Check if the results were fetched
-    try:
-        results = crawler.get_results()
-    except MaxRetryError:
-        return connection_error()
-    else:
-        return jsonify(results)
-
-
 @app.route('/protected/<resource>', methods=['GET'])
+@requires_auth
 def get_single_protected(resource):
     """
     Route to get a single protected resource.
@@ -131,12 +110,8 @@ def get_single_protected(resource):
     http://localhost/protected/resource_name
     """
 
-    # Get auth_key sent via GET method
-    auth_key = request.args.get('auth_key')
-
-    # On empty auth info, 401!
-    if auth_key is None:
-        return bad_auth()
+    auth = request.authorization
+    encoded_auth = b64encode(auth.username + ':' + auth.password)
 
     # Check if resource exists, otherwise 404!
     if resource not in protected_resources.keys():
@@ -146,10 +121,10 @@ def get_single_protected(resource):
     friendly_resource = {resource: protected_resources[resource]}
 
     try:
-        crawler = Crawler(resources=friendly_resource, auth_key=auth_key)
+        crawler = Crawler(resources=friendly_resource, auth_key=encoded_auth)
     except AuthError:
         # On wrong auth info, 401!
-        return bad_auth()
+        return authenticate()
     else:
         # Check if the results were fetched
         try:
@@ -158,29 +133,3 @@ def get_single_protected(resource):
             return connection_error()
         else:
             return jsonify(results)
-
-
-@app.route('/open/<resource>', methods=['GET'])
-def get_single_open(resource):
-    """
-    Route to get a single open resource.
-    The querystring should be:
-    http://localhost/open/resource_name
-    """
-
-    # Check if resource exists, otherwise 404!
-    if resource not in open_resources.keys():
-        return not_found()
-
-    # Crawler-friendly dictionary with resource
-    friendly_resource = {resource: open_resources[resource]}
-
-    crawler = Crawler(resources=friendly_resource)
-
-    # Check if the results were fetched
-    try:
-        results = crawler.get_results()
-    except MaxRetryError:
-        return connection_error()
-    else:
-        return jsonify(results)
