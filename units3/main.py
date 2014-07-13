@@ -31,8 +31,8 @@ def not_found(e=None):
         404)
 
 
-# Definition of requires_auth decorator
 def requires_auth(f):
+    """Decorator for authentication definition"""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
@@ -44,7 +44,7 @@ def requires_auth(f):
 
 def authenticate():
     """Sends a 401 response that enables basic auth"""
-    return Response(
+    return make_response(
         "Could not verify your access level for that URL.\n"
         "You have to login with proper credentials""",
         401,
@@ -69,8 +69,11 @@ def get_protected():
     http://localhost/protected/?resources=fist,second,third&auth_key=mykey
     """
 
-    # Get resources requested via GET method
     req_resources = request.args.get('resources')
+
+    if not req_resources:
+        return not_found()
+
     if ',' in req_resources:
         req_resources = req_resources.split(',')
 
