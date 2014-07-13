@@ -4,6 +4,7 @@ import lxml.html
 
 
 class Parser:
+
     def __init__(self, html):
         self.root = lxml.html.fromstring(html)
 
@@ -17,8 +18,9 @@ class Parser:
         for row in rows:
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = [unicode(td.text_content())
-                     for td in row.xpath('td[text()|a/text()]')]
+            cells = [unicode(td)
+                     for td in rows[1].xpath('td/text() | td/a/text()')
+                     if td.strip()]
 
             # Unpack codice, nome from cell
             codice, nome = cells[1].split(' - ')
@@ -51,13 +53,14 @@ class Parser:
         for idx, row in enumerate(rows):
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = [unicode(td.text_content())
-                     for td in row.xpath('td[text()|a/text()]')]
+            cells = [unicode(td)
+                     for td in rows[1].xpath('td/text() | td/a/text()')
+                     if td.strip()]
 
             # This is needed to handle the case of multiple fees,
             # which is managed through rowspans...
             if len(cells) == 1:
-                result[idx-1]['descrizione'] += " | " + cells[0]
+                result[idx - 1]['descrizione'] += " | " + cells[0]
                 continue
 
             # Check if fee was payed
@@ -94,20 +97,20 @@ class Parser:
             else:
                 iscrizioni_aperte = True
 
-            cells = [unicode(x)
-                     for x in rows[1].xpath('td/text()')
-                     if x.strip()]
+            cells = [unicode(td)
+                     for td in rows[1].xpath('td/text()')
+                     if td.strip()]
 
             appello = {'nome_corso': cells[0],
                        'data_esame': cells[1],
                        'periodo_iscrizione': {
                            'inizio': cells[2],
                            'fine': cells[3]
-                       },
-                       'descrizione': cells[4],
-                       'sessioni': cells[5],
-                       'iscrizioni_aperte': iscrizioni_aperte
-                       }
+            },
+                'descrizione': cells[4],
+                'sessioni': cells[5],
+                'iscrizioni_aperte': iscrizioni_aperte
+            }
 
             result.append(appello)
 

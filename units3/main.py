@@ -37,6 +37,7 @@ def requires_auth(f):
         auth = request.authorization
         if (not auth) or (not auth.username) or (not auth.password):
             return authenticate()
+
         return f(*args, **kwargs)
     return decorated
 
@@ -93,7 +94,7 @@ def get_protected():
                  if res_name in req_resources}
 
     try:
-        crawler = Crawler(resources=resources, auth_key=encoded_auth)
+        crawler = Crawler(resources, encoded_auth)
 
         results = crawler.get_results()
     except AuthError:
