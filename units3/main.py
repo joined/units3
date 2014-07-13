@@ -19,7 +19,7 @@ protected_resources = {
 }
 
 # Resources that don't need it
-open_resources = {'home': '/Home.do'}
+open_resources = {'bacheca_appelli': '/ListaAppelliOfferta.do'}
 
 
 # On 404 error
