@@ -4,7 +4,7 @@ from base64 import b64encode
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
 from urllib3.exceptions import MaxRetryError
-from flask import Flask, jsonify, request, make_response, Response
+from flask import Flask, jsonify, request, make_response
 from functools import wraps
 
 
@@ -22,17 +22,16 @@ protected_resources = {
 }
 
 
-# On 404 error
 @app.errorhandler(404)
 def not_found(e=None):
     """Return a JSON with error on 404, insted of ugly HTML"""
     return make_response(
-        jsonify({'errore': u'Una o più risorse non trovate.'}),
+        jsonify({'errore': 'Una o più risorse non trovate.'}),
         404)
 
 
 def requires_auth(f):
-    """Decorator for authentication definition"""
+    """Decorator for authentication"""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth = request.authorization
@@ -48,7 +47,7 @@ def authenticate():
         "Could not verify your access level for that URL.\n"
         "You have to login with proper credentials""",
         401,
-        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+        {'WWW-Authenticate': 'Basic realm="units3"'}
     )
 
 
@@ -66,14 +65,16 @@ def get_protected():
     """
     Route to get multiple protected resources at once.
     The querystring should be:
-    http://localhost/protected/?resources=fist,second,third&auth_key=mykey
+    http://localhost/protected/?select=fist,second,third
     """
 
-    req_resources = request.args.get('resources')
+    req_resources = request.args.get('select')
 
+    # Check if 'select' parameter was set, if not 404
     if not req_resources:
         return not_found()
 
+    # Split requested resources if there are more than one
     if ',' in req_resources:
         req_resources = req_resources.split(',')
 
@@ -81,6 +82,7 @@ def get_protected():
     if not set(protected_resources.keys()) >= set(req_resources):
         return not_found()
 
+    # Get auth from request and encode it to a Crawler-friendly format
     auth = request.authorization
     encoded_auth = b64encode(auth.username + ':' + auth.password)
 
@@ -89,19 +91,19 @@ def get_protected():
                  for (res_name, res_url)
                  in six.iteritems(protected_resources)
                  if res_name in req_resources}
+
     try:
         crawler = Crawler(resources=resources, auth_key=encoded_auth)
+
+        results = crawler.get_results()
     except AuthError:
         # On wrong auth info, 401!
         return authenticate()
+    except MaxRetryError:
+        # Internal connection problems
+        return connection_error()
     else:
-        # Check if the results were fetched
-        try:
-            results = crawler.get_results()
-        except MaxRetryError:
-            return connection_error()
-        else:
-            return jsonify(results)
+        return jsonify(results)
 
 
 @app.route('/protected/<resource>', methods=['GET'])
@@ -125,14 +127,13 @@ def get_single_protected(resource):
 
     try:
         crawler = Crawler(resources=friendly_resource, auth_key=encoded_auth)
+
+        results = crawler.get_results()
     except AuthError:
         # On wrong auth info, 401!
         return authenticate()
+    except MaxRetryError:
+        # Internal connection problems
+        return connection_error()
     else:
-        # Check if the results were fetched
-        try:
-            results = crawler.get_results()
-        except MaxRetryError:
-            return connection_error()
-        else:
-            return jsonify(results)
+        return jsonify(results)
