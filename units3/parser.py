@@ -1,91 +1,112 @@
 # -*- coding: utf-8 -*-
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
+import lxml.html
 
 
 class Parser:
     def __init__(self, html):
-        self.soup = BeautifulSoup(html)
+        self.root = lxml.html.fromstring(html)
 
     def libretto(self):
-        # List of of table rows I need
-        rows_list = self.soup.find('table', {'class': 'detail_table'}).find_all('tr')
+        # Select tr tags (skip the 1st) from table with class "detail_table"
+        rows = self.root.xpath('//table[@class="detail_table"]' +
+                               '//tr[position()>1]')
 
         result = []
 
-        # Skip the first line, garbage
-        for row in rows_list[1:]:
-            # Row in a nice list format
-            f_row = row.get_text('|', strip=True).split('|')
+        for row in rows:
+            # Get text content from td tags with text inside
+            # or with a link with text inside
+            cells = [unicode(td.text_content())
+                     for td in row.xpath('td[text()|a/text()]')]
 
-            codice, nome = f_row[1].split(' - ')
+            # Unpack codice, nome from cell
+            codice, nome = cells[1].split(' - ')
 
-            esame = {'anno_di_corso': int(f_row[0]),
+            esame = {'anno_di_corso': int(cells[0]),
                      'nome': nome,
                      'codice': codice,
-                     'crediti': int(f_row[2]),
-                     'anno_frequenza': f_row[3],
+                     'crediti': int(cells[2]),
+                     'anno_frequenza': cells[3],
                      }
 
-            # Verify if "voto - data" is present, they could be not
-            if len(f_row) < 5:
-                esame['superato'] = False
-            else:
+            # Check if exam was passed
+            if row.xpath('td[img/@alt="Superata"]'):
                 esame['superato'] = True
-                esame['voto'], esame['data'] = f_row[4].split(u'\u00a0-\u00a0')
+                esame['voto'], esame['data'] = cells[4].split(u'\u00a0-\u00a0')
+            else:
+                esame['superato'] = False
 
             result.append(esame)
 
         return result
 
     def pagamenti(self):
-        rows_list = self.soup.find('table', {'class': 'detail_table'}).find_all('tr')
+        # Select tr tags (skip the 1st) from table with class "detail_table"
+        rows = self.root.xpath('//table[@class="detail_table"]' +
+                               '//tr[position()>2]')
 
         result = []
 
-        # Skip the first line, garbage
-        for row in rows_list[1:]:
-            if len(row.contents) > 3:
-                # If there's the green semaphore the fee is payed
-                stato = 'pagato' if 'semaf_v' in str(row.contents[7]) else 'da_pagare'
+        for idx, row in enumerate(rows):
+            # Get text content from td tags with text inside
+            # or with a link with text inside
+            cells = [unicode(td.text_content())
+                     for td in row.xpath('td[text()|a/text()]')]
 
-                # Row in a nice list format
-                f_row = row.get_text('|', strip=True).split('|')
+            # This is needed to handle the case of multiple fees,
+            # which is managed through rowspans...
+            if len(cells) == 1:
+                result[idx-1]['descrizione'] += " | " + cells[0]
+                continue
 
-                # Convert to float the value
-                importo = float(f_row[5][2:].replace(',', '.'))
+            # Check if fee was payed
+            if row.xpath('td[img/@alt="pagamento confermato"]'):
+                pagata = True
+            else:
+                pagata = False
 
-                tassa = {'codice_fattura': int(f_row[0]),
-                         'codice_bollettino': f_row[1],
-                         'anno': f_row[2],
-                         'descrizione': f_row[3],
-                         'data_scadenza': f_row[4],
-                         'importo': importo,
-                         'stato': stato
-                         }
+            tassa = {'codice_fattura': int(cells[0]),
+                     'codice_bollettino': cells[1],
+                     'anno': cells[2],
+                     'descrizione': cells[3],
+                     'data_scadenza': cells[4],
+                     'importo': float(cells[5][2:].replace(',', '.')),
+                     'pagata': pagata
+                     }
 
-                result.append(tassa)
+            result.append(tassa)
 
         return result
 
     def prenotazione_appelli(self):
-        rows_list = self.soup.find('table', {'class': 'detail_table'}).find_all('tr')
+        # Select tr tags (skip the 1st) from table with class "detail_table"
+        rows = self.root.xpath('//table[@class="detail_table"]' +
+                               '//tr[position()>1]')
 
         result = []
 
         # Skip the first line, garbage
-        for row in rows_list[1:]:
-            stato = 'chiuso' if 'chiuse' in str(row.contents[1]) else 'aperto'
+        for row in rows:
+            # Check if subscription is still opened
+            if row.xpath('td[img/@alt="iscrizioni chiuse"]'):
+                iscrizioni_aperte = False
+            else:
+                iscrizioni_aperte = True
 
-            # Row in a nice list format
-            f_row = row.get_text('|', strip=True).split('|')
+            cells = [unicode(x)
+                     for x in rows[1].xpath('td/text()')
+                     if x.strip()]
 
-            appello = {'nome_corso': f_row[0],
-                       'data': f_row[1],
-                       'inizio_periodo_iscrizione': f_row[2],
-                       'termine_periodo_iscrizione': f_row[3],
-                       'descrizione': f_row[4],
-                       'sessioni': f_row[5],
-                       'stato': stato
+            appello = {'nome_corso': cells[0],
+                       'data_esame': cells[1],
+                       'periodo_iscrizione': {
+                           'inizio': cells[2],
+                           'fine': cells[3]
+                       },
+                       'descrizione': cells[4],
+                       'sessioni': cells[5],
+                       'iscrizioni_aperte': iscrizioni_aperte
                        }
 
             result.append(appello)
