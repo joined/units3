@@ -19,7 +19,7 @@ class Parser:
             # Get text content from td tags with text inside
             # or with a link with text inside
             cells = [unicode(td)
-                     for td in rows[1].xpath('td/text() | td/a/text()')
+                     for td in row.xpath('td/text() | td/a/text()')
                      if td.strip()]
 
             # Unpack codice, nome from cell
@@ -54,7 +54,7 @@ class Parser:
             # Get text content from td tags with text inside
             # or with a link with text inside
             cells = [unicode(td)
-                     for td in rows[1].xpath('td/text() | td/a/text()')
+                     for td in row.xpath('td/text() | td/a/text()')
                      if td.strip()]
 
             # This is needed to handle the case of multiple fees,
@@ -98,7 +98,7 @@ class Parser:
                 iscrizioni_aperte = True
 
             cells = [unicode(td)
-                     for td in rows[1].xpath('td/text()')
+                     for td in row.xpath('td/text()')
                      if td.strip()]
 
             appello = {'nome_corso': cells[0],
