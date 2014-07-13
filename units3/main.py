@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 import six
+import json
 from base64 import b64encode
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
 from urllib3.exceptions import MaxRetryError
-from flask import Flask, jsonify, request, make_response
+from flask import Flask, request, Response, jsonify, make_response
 from functools import wraps
-
-
-app = Flask(__name__)
 
 # Resources that need authentication
 protected_resources = {
@@ -22,12 +20,21 @@ protected_resources = {
 }
 
 
+class JSONResponse(Response):
+    default_mimetype = 'application/json; charset=utf-8'
+
+
+app = Flask(__name__)
+app.response_class = JSONResponse
+
+
 @app.errorhandler(404)
 def not_found(e=None):
     """Return a JSON with error on 404, insted of ugly HTML"""
     return make_response(
-        jsonify({'errore': 'Una o più risorse non trovate.'}),
-        404)
+        json.dumps({'errore': 'Una o più risorse non trovate.'}),
+        404
+    )
 
 
 def requires_auth(f):
@@ -37,7 +44,6 @@ def requires_auth(f):
         auth = request.authorization
         if (not auth) or (not auth.username) or (not auth.password):
             return authenticate()
-
         return f(*args, **kwargs)
     return decorated
 
@@ -45,8 +51,7 @@ def requires_auth(f):
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return make_response(
-        "Could not verify your access level for that URL.\n"
-        "You have to login with proper credentials""",
+        json.dumps({'errore': 'Credenziali errate'}),
         401,
         {'WWW-Authenticate': 'Basic realm="units3"'}
     )
@@ -54,8 +59,8 @@ def authenticate():
 
 def connection_error():
     """Response for internal connection problem"""
-    return make_response(
-        jsonify({'errore': 'Problema di connessione con il servizio ESSE3'}),
+    return Response(
+        json.dumps({'errore': 'Problema di connessione con ESSE3'}),
         500
     )
 
@@ -104,7 +109,7 @@ def get_protected():
         # Internal connection problems
         return connection_error()
     else:
-        return jsonify(results)
+        return make_response(json.dumps(results))
 
 
 @app.route('/protected/<resource>', methods=['GET'])
@@ -137,4 +142,4 @@ def get_single_protected(resource):
         # Internal connection problems
         return connection_error()
     else:
-        return jsonify(results)
+        return make_response(json.dumps(results))
