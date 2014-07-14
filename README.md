@@ -12,7 +12,7 @@ Why would you want to do that? Let's just say that ESSE3 website doesn't look TH
 ## Installation
 This project is written in Python 3.4 and it's not backwards-compatibly with Python 2.
 
-Assuming you have are on Linux / OS X and you have already installed `pip` and `virtualenv` (you do, right?),
+Assuming you are on Linux / OS X and you have already installed `pip` and `virtualenv` (you do, right?),
 it's simple as:
 
     $ git clone https://github.com/joined/units3.git
