@@ -7,6 +7,33 @@ class Parser:
     def __init__(self, html):
         self.root = lxml.html.fromstring(html)
 
+    def prenotazioni_effettuate(self):
+        tables = self.root.xpath('//table[@class="detail_table"]')
+
+        result = []
+
+        for table in tables:
+            splitted_info = table.xpath('tr/th/text()')[0].split(' - ')
+            nome_corso, codice, descrizione = splitted_info
+            numero_iscrizione = table.xpath('tr/th/a/text()')[0].split(': ')[1]
+
+            date = table.xpath('tr[6]/td[1]')[0].text_content()
+            time = table.xpath('tr[6]/td[2]')[0].text_content()
+            place = table.xpath('tr[6]/td[3]')[0].text_content()
+
+            result.append(
+                {'nome_corso': nome_corso,
+                 'codice_corso': codice[1:-1],
+                 'descrizione': descrizione,
+                 'numero_iscrizione': numero_iscrizione,
+                 'data': date,
+                 'ora': time,
+                 'luogo': place if place else None
+                 }
+            )
+
+        return result
+
     def home(self):
         # Custom XPath, thanks Chrome DevTools
         titolo = str(self.root.xpath('//table[2]/tbody/tr/td/div/text()')[0])
