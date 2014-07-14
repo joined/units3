@@ -21,7 +21,7 @@ to get up & running without any hassle (if you don't know what Vagrant is, check
     Cleaning up...
     joined@mb$ vagrant ssh
     vagrant@vagrant-ubuntu-trusty-64:~$ cd units3
-    vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v
+    vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v # -h for help
        * Running on http://0.0.0.0:5000/
 
 It is configured to use 1024 mb of RAM and to forward the guest port 5000 to the host port 8080.
