@@ -16,21 +16,21 @@ class Crawler:
     after having parsed them.
     """
 
-    def __init__(self, resources=None, auth_key=None):
+    def __init__(self, resources, auth_key):
         self.resources = resources
         self.auth_key = auth_key
         self.cookie = None
         # Connection pool to reuse connections
         self.http = urllib3.connection_from_url('https://esse3.units.it')
 
-        # If auth key was given but it is not valid, raise exception
-        if auth_key is not None and not self.auth_is_valid():
+        # If auth key is not in a valid format, raise exception
+        if not self.auth_is_valid():
             raise AuthError()
 
     def renew_cookie(self, first_try=True):
         """
         Renews cookie for the current user,
-        and checks if auth info is ok.
+        checking if auth info is ok.
         """
 
         headers = {
@@ -77,10 +77,9 @@ class Crawler:
         """
         headers = {'User-Agent': 'Python/3.4'}
 
-        # Add auth if needed
-        if self.auth_key is not None:
-            headers['Cookie'] = self.cookie
-            headers['Authorization'] = 'Basic ' + self.auth_key
+        # Add auth data
+        headers['Cookie'] = self.cookie
+        headers['Authorization'] = 'Basic ' + self.auth_key
 
         # Unpack resource
         res_name, res_url = resource
@@ -89,9 +88,8 @@ class Crawler:
         return (res_name, req.data)
 
     def get_results(self):
-        # If we are fetching protected resources, need to renew cookie
-        if self.auth_key is not None:
-            self.renew_cookie()
+        # Renew cookie
+        self.renew_cookie()
 
         # Threads Powah!
         pool = ThreadPoolExecutor(max_workers=2)
@@ -100,6 +98,7 @@ class Crawler:
         # Dict containing results to be parsed
         to_parse = {}
 
+        # This is just for developement, will be removed :)
         for (res_name, res_url) in six.iteritems(self.resources):
             # If parser doesn't exist, say it
             if not hasattr(Parser, res_name):
