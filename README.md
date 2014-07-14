@@ -28,7 +28,7 @@ it's simple as:
 On Linux, there seems to be some issues with lxml compilation.
 On Debian/Ubuntu you can try to solve them with:
 
-    apt-get install libxslt1-dev libxslt1.1 libxml2-dev libxml2 libssl-dev python-libxml2
+    apt-get install python3-dev libxml2-dev python-libxml2 libxslt-dev
 
 For who's thinking _But I use Windows!_: I'm sorry. (I recommend Vagrant!)
 
