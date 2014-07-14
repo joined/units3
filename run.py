@@ -23,4 +23,4 @@ if __name__ == "__main__":
 
     host = '0.0.0.0' if args.visible else '127.0.0.1'
 
-    app.run(debug=args.debug)
+    app.run(host=host, debug=args.debug)
