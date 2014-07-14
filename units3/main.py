@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import six
 from base64 import b64encode
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
@@ -20,6 +19,7 @@ protected_resources = {
 
 
 class JSONResponse(Response):
+    """Subclasses Response to set default mimetype to json"""
     default_mimetype = 'application/json'
 
 
@@ -31,7 +31,7 @@ app.response_class = JSONResponse
 def not_found(e=None):
     """Return a JSON with error on 404, insted of ugly HTML"""
     return make_response(
-        jsonify({'errore': 'Una o più risorse non trovate.'}),
+        jsonify({'errore': u'Una o più risorse non trovate.'}),
         404
     )
 
@@ -89,12 +89,12 @@ def get_protected():
 
     # Get auth from request and encode it to a Crawler-friendly format
     auth = request.authorization
-    encoded_auth = b64encode(auth.username + ':' + auth.password)
+    encoded_auth = b64encode(auth.username + u':' + auth.password)
 
     # Crawler-friendly dictionary of services to be retrieved
     resources = {res_name: res_url
                  for (res_name, res_url)
-                 in six.iteritems(protected_resources)
+                 in protected_resources.items()
                  if res_name in req_resources}
 
     try:
@@ -120,8 +120,8 @@ def get_single_protected(resource):
     http://localhost/protected/resource_name
     """
 
-    auth = request.authorization
-    encoded_auth = b64encode(auth.username + ':' + auth.password)
+    auth = request.authorization.values()
+    encoded_auth = b64encode(':'.join(auth.values()).encode('utf-8'))
 
     # Check if resource exists, otherwise 404!
     if resource not in protected_resources.keys():

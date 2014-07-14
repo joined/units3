@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# from bs4 import BeautifulSoup
 import lxml.html
 
 
@@ -18,19 +17,19 @@ class Parser:
         for row in rows:
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = [unicode(td)
-                     for td in row.xpath('td/text() | td/a/text()')
-                     if td.strip()]
+            cells = filter(lambda td: td.strip(),
+                           row.xpath('td/text() | td/a/text()'))
 
             # Unpack codice, nome from cell
             codice, nome = cells[1].split(' - ')
 
-            esame = {'anno_di_corso': int(cells[0]),
-                     'nome': nome,
-                     'codice': codice,
-                     'crediti': int(cells[2]),
-                     'anno_frequenza': cells[3],
-                     }
+            esame = {
+                'anno_di_corso': int(cells[0]),
+                'nome': nome,
+                'codice': codice,
+                'crediti': int(cells[2]),
+                'anno_frequenza': cells[3],
+            }
 
             # Check if exam was passed
             if row.xpath('td[img/@alt="Superata"]'):
@@ -53,9 +52,8 @@ class Parser:
         for idx, row in enumerate(rows):
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = [unicode(td)
-                     for td in row.xpath('td/text() | td/a/text()')
-                     if td.strip()]
+            cells = filter(lambda td: td.strip(),
+                           row.xpath('td/text() | td/a/text()'))
 
             # This is needed to handle the case of multiple fees,
             # which is managed through rowspans...
@@ -69,14 +67,15 @@ class Parser:
             else:
                 pagata = False
 
-            tassa = {'codice_fattura': int(cells[0]),
-                     'codice_bollettino': cells[1],
-                     'anno': cells[2],
-                     'descrizione': cells[3],
-                     'data_scadenza': cells[4],
-                     'importo': float(cells[5][2:].replace(',', '.')),
-                     'pagata': pagata
-                     }
+            tassa = {
+                'codice_fattura': int(cells[0]),
+                'codice_bollettino': cells[1],
+                'anno': cells[2],
+                'descrizione': cells[3],
+                'data_scadenza': cells[4],
+                'importo': float(cells[5][2:].replace(',', '.')),
+                'pagata': pagata
+            }
 
             result.append(tassa)
 
@@ -97,16 +96,16 @@ class Parser:
             else:
                 iscrizioni_aperte = True
 
-            cells = [unicode(td)
-                     for td in row.xpath('td/text()')
-                     if td.strip()]
+            cells = filter(lambda td: td.strip(),
+                           row.xpath('td/text()'))
 
-            appello = {'nome_corso': cells[0],
-                       'data_esame': cells[1],
-                       'periodo_iscrizione': {
-                           'inizio': cells[2],
-                           'fine': cells[3]
-            },
+            appello = {
+                'nome_corso': cells[0],
+                'data_esame': cells[1],
+                'periodo_iscrizione': {
+                    'inizio': cells[2],
+                    'fine': cells[3]
+                },
                 'descrizione': cells[4],
                 'sessioni': cells[5],
                 'iscrizioni_aperte': iscrizioni_aperte
