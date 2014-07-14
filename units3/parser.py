@@ -8,12 +8,31 @@ class Parser:
         self.root = lxml.html.fromstring(html)
 
     def home(self):
+        # Custom XPath, thanks Chrome DevTools
         titolo = str(self.root.xpath('//table[2]/tbody/tr/td/div/text()')[0])
 
-        nome = titolo.split(' - ')[0]
+        # Unpack and capitalize first letter of name
+        nome = titolo.split(' - ')[0].title()
         matricola = titolo.split(' - ')[1][6:-1]
 
-        return [{'nome': nome, 'matricola': matricola}]
+        # Self-explaining
+        info = [x.strip() for x
+                in self.root.xpath('//td[@class="tplMaster"]/text()')
+                if x.strip()]
+
+        result = {
+            'nome': nome,
+            'matricola': matricola,
+            'tipo_di_corso': info[0],
+            'profilo_studente': info[1],
+            'anno_di_corso': int(info[2]),
+            'data_immatricolazione': info[3],
+            'corso_di_studio': info[4],
+            'ordinamento': info[5],
+            'percorso_di_studio': info[6]
+        }
+
+        return result
 
     def libretto(self):
         # Select tr tags (skip the 1st) from table with class "detail_table"
