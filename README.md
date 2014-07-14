@@ -4,8 +4,8 @@ This project aims to create an API for the University of Trieste ESSE3 system.
 
 ESSE3 is the web application in which the students data, exams & the like are stored.
 
-ESSE3 doesn't offer any sort of API by itself (YOU DON'T SAY?) and this is obviously
-restricting if anyone wants to do something with his university career data.
+ESSE3 doesn't offer any sort of API by itself and this is obviously
+restricting if someone wants to 'play' with his university career data.
 
 Why would you want to do that? Let's just say that ESSE3 website doesn't look THAT good, and having the session expire every 15 minutes is really annoying.
 
@@ -21,6 +21,8 @@ As simple as:
 	Cleaning up...
     $ ./run.py   # -h for the help
      * Running on http://127.0.0.1:5000/
+
+For who's thinking _But I use Windows!_: I'm sorry :(
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
@@ -43,7 +45,7 @@ The resources actually implemented are:
 
 They roughly correspond to the respective pages on the ESSE3 service.
 
-I recommend to use the excellent [httpie](https://github.com/jakubroztocil/httpie) to test the API (it's like cURL with superpowers). 
+I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie) to test the API (it's like cURL with superpowers). 
 
 Sample request for the `home` resource:
 
