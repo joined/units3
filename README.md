@@ -43,7 +43,7 @@ The resources actually implemented are:
 + `prenotazione_appelli`
 + `prenotazioni_effettuate`
 
-They roughly correspond to the respective pages on the ESSE3 service.
+They roughly correspond to their respective pages on the ESSE3 service.
 
 I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie) to test the API (it's like cURL with superpowers). 
 
@@ -67,6 +67,9 @@ Sample request for the `home` resource:
         	"tipo_di_corso": "Corso di Laurea"
     	}
 	}
+
+I plan to add more detailed documentation soon. In the meantime, you can discover
+by yourself how the API works by reading the code and making test requests.
 
 ## Disclaimer
 This project IS NOT connected or affiliated in any way with the University of Trieste.
