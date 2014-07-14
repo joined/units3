@@ -10,7 +10,9 @@ restricting if someone wants to 'play' with his university career data.
 Why would you want to do that? Let's just say that ESSE3 website doesn't look THAT good, and having the session expire every 15 minutes is really annoying.
 
 ## Installation
-As simple as:
+This project is written in Python 3.4 and it isn't backwards-compatibly with Python 2.
+
+To install it, it's simple as:
 
     $ git clone https://github.com/joined/units3.git
     $ cd units3
