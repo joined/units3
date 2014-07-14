@@ -57,24 +57,29 @@ I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie
 
 Sample request for the `home` resource:
 
-	$ http -a username:password http://localhost:5000/protected/home
-	HTTP/1.0 200 OK
-	Content-Length: 410
-	Content-Type: application/json
-	Server: Werkzeug/0.9.6 Python/3.4.1
-	{
-    	"home": {
-        	"anno_di_corso": 1,
-        	"corso_di_studio": "[IN00] - INGEGNERIA DELLE BANANE",
-        	"data_immatricolazione": "01/01/2023",
-        	"matricola": "IN01234567",
-        	"nome": "Mario Rossi",
-        	"ordinamento": "[IN00-10] - INGEGNERIA DELLE BANANE",
-        	"percorso_di_studio": "[PDS0-2010] - comune",
-        	"profilo_studente": "Studente Standard",
-        	"tipo_di_corso": "Corso di Laurea"
-    	}
+```
+$ http -a username:password http://localhost:5000/protected/home
+HTTP/1.0 200 OK
+Content-Length: 410
+Content-Type: application/json
+Server: Werkzeug/0.9.6 Python/3.4.1
+```
+
+```json
+{
+	"home": {
+    	"anno_di_corso": 1,
+    	"corso_di_studio": "[IN00] - INGEGNERIA DELLE BANANE",
+    	"data_immatricolazione": "01/01/2023",
+    	"matricola": "IN01234567",
+    	"nome": "Mario Rossi",
+    	"ordinamento": "[IN00-10] - INGEGNERIA DELLE BANANE",
+    	"percorso_di_studio": "[PDS0-2010] - comune",
+    	"profilo_studente": "Studente Standard",
+    	"tipo_di_corso": "Corso di Laurea"
 	}
+}
+```
 
 I plan to add more detailed documentation soon. In the meantime, you can discover
 by yourself how the API works by reading the code and making test requests.
