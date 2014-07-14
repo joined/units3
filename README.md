@@ -7,15 +7,15 @@ ESSE3 is the web application in which the students data, exams & the like are st
 ESSE3 doesn't offer any sort of API by itself and this is obviously
 restricting if someone wants to 'play' with his university career data.
 
-Why would you want to do that? Let's just say that ESSE3 website doesn't look THAT good, and having the session expire every 15 minutes is really annoying.
+Why would you want to do that? Let's just say that ESSE3 website doesn't look that good, and having the session expire every 15 minutes is really annoying.
 
 ## Installation
 To ease development to everyone, I set up a Vagrantfile and a provisioning script
 to get up & running without any hassle (if you don't know what Vagrant is, check out [this link](http://vagrantup.com))
 
-    joined@mb$ git clone https://github.com/joined/units3.git
-    joined@mb$ cd units3/vagrant
-    joined@mb$ vagrant up
+    joined@mb:~$ git clone https://github.com/joined/units3.git
+    joined@mb:~$ cd units3/vagrant
+    joined@mb:~/units3/vagrant$ vagrant up
     Bringing machine 'default' up with 'virtualbox' provider...
     ...
     Cleaning up...
@@ -24,7 +24,13 @@ to get up & running without any hassle (if you don't know what Vagrant is, check
     vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v # -h for help
        * Running on http://0.0.0.0:5000/
 
-It is configured to use 1024 mb of RAM and to forward the guest port 5000 to the host port 8080.
+###Vagrant configuration
+
++ Latest Ubuntu 14.04 LTS system
++ 1024 mb of RAM (512 mb is not enough to compile lxml)
++ 2 cpus shared
++ Guest port 5000 forwarded to host port 8080.
++ Root of repository synced with `/home/vagrant/units3/`
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
