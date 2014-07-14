@@ -64,6 +64,13 @@ def connection_error():
     )
 
 
+def encode_auth(auth):
+    username = auth['username'].encode('utf-8')
+    password = auth['password'].encode('utf-8')
+
+    return b64encode(username + b':' + password).decode('utf-8')
+
+
 @app.route('/protected/', methods=['GET'])
 @requires_auth
 def get_protected():
@@ -87,9 +94,7 @@ def get_protected():
     if not set(protected_resources.keys()) >= set(req_resources):
         return not_found()
 
-    # Get auth from request and encode it to a Crawler-friendly format
-    auth = request.authorization
-    encoded_auth = b64encode(auth.username + u':' + auth.password)
+    encoded_auth = encode_auth(request.authorization)
 
     # Crawler-friendly dictionary of services to be retrieved
     resources = {res_name: res_url
@@ -120,8 +125,7 @@ def get_single_protected(resource):
     http://localhost/protected/resource_name
     """
 
-    auth = request.authorization.values()
-    encoded_auth = b64encode(':'.join(auth.values()).encode('utf-8'))
+    encoded_auth = encode_auth(request.authorization)
 
     # Check if resource exists, otherwise 404!
     if resource not in protected_resources.keys():

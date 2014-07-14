@@ -17,8 +17,8 @@ class Parser:
         for row in rows:
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = filter(lambda td: td.strip(),
-                           row.xpath('td/text() | td/a/text()'))
+            cells = [td for td in row.xpath('td/text() | td/a/text()')
+                     if td.strip()]
 
             # Unpack codice, nome from cell
             codice, nome = cells[1].split(' - ')
@@ -52,8 +52,8 @@ class Parser:
         for idx, row in enumerate(rows):
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = filter(lambda td: td.strip(),
-                           row.xpath('td/text() | td/a/text()'))
+            cells = [td for td in row.xpath('td/text() | td/a/text()')
+                     if td.strip()]
 
             # This is needed to handle the case of multiple fees,
             # which is managed through rowspans...
@@ -96,8 +96,8 @@ class Parser:
             else:
                 iscrizioni_aperte = True
 
-            cells = filter(lambda td: td.strip(),
-                           row.xpath('td/text()'))
+            cells = [td for td in row.xpath('td/text() | td/a/text()')
+                     if td.strip()]
 
             appello = {
                 'nome_corso': cells[0],
