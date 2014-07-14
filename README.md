@@ -10,9 +10,10 @@ restricting if someone wants to 'play' with his university career data.
 Why would you want to do that? Let's just say that ESSE3 website doesn't look THAT good, and having the session expire every 15 minutes is really annoying.
 
 ## Installation
-This project is written in Python 3.4 and it isn't backwards-compatibly with Python 2.
+This project is written in Python 3.4 and it's not backwards-compatibly with Python 2.
 
-To install it, it's simple as:
+Assuming you have are on Linux / OS X and you have already installed `pip` and `virtualenv` (you do, right?),
+it's simple as:
 
     $ git clone https://github.com/joined/units3.git
     $ cd units3
@@ -24,7 +25,12 @@ To install it, it's simple as:
     $ ./run.py   # -h for the help
      * Running on http://127.0.0.1:5000/
 
-For who's thinking _But I use Windows!_: I'm sorry :(
+On Linux, there seems to be some issues with lxml compilation.
+On Debian/Ubuntu you can try to solve them with:
+
+    apt-get install libxslt1-dev libxslt1.1 libxml2-dev libxml2 libssl-dev python-libxml2
+
+For who's thinking _But I use Windows!_: I'm sorry. (I recommend Vagrant!)
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
