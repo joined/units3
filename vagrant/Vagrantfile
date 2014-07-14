@@ -6,6 +6,10 @@ VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Box image name
   config.vm.box = "ubuntu14"
+  
+  # The url from where the 'config.vm.box' box will be fetched if it
+  # doesn't already exist on the user's system.
+  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
 
   # Bootstrap script
   config.vm.provision :shell, path: "bootstrap.sh"
@@ -13,15 +17,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # Sync directories
   config.vm.synced_folder "../", "/home/vagrant/units3/"
 
-  # The url from where the 'config.vm.box' box will be fetched if it
-  # doesn't already exist on the user's system.
-  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  # Activate private network with DHCP
+  # config.vm.network "private_network", type: "dhcp"
 
   # Forward host port 8080 to guest port 5000
   config.vm.network "forwarded_port", guest: 5000, host: 8080
 
   config.vm.provider "virtualbox" do |vb|
     # Change memory to 1024MB:
-    vb.customize ["modifyvm", :id, "--memory", "1024"]
+    vb.customize ["modifyvm", :id, "--memory", 1024]
+    vb.customize ["modifyvm", :id, "--cpus", 2]
   end
 end
