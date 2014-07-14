@@ -7,6 +7,14 @@ class Parser:
     def __init__(self, html):
         self.root = lxml.html.fromstring(html)
 
+    def home(self):
+        titolo = str(self.root.xpath('//table[2]/tbody/tr/td/div/text()')[0])
+
+        nome = titolo.split(' - ')[0]
+        matricola = titolo.split(' - ')[1][6:-1]
+
+        return [{'nome': nome, 'matricola': matricola}]
+
     def libretto(self):
         # Select tr tags (skip the 1st) from table with class "detail_table"
         rows = self.root.xpath('//table[@class="detail_table"]' +

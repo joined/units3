@@ -14,7 +14,8 @@ protected_resources = {
     'certificazioni': '/auth/studente/Certificati/ListaCertificati.do',
     'prenotazione_appelli': '/auth/studente/Appelli/AppelliF.do',
     'prenotazioni_effettuate': '/auth/studente/Appelli/BachecaPrenotazioni.do',
-    'prove_parziali': '/auth/studente/Appelli/AppelliP.do'
+    'prove_parziali': '/auth/studente/Appelli/AppelliP.do',
+    'home': '/Home.do'
 }
 
 
