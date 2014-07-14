@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import six
-import json
 from base64 import b64encode
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
 from urllib3.exceptions import MaxRetryError
-from flask import Flask, request, Response, make_response
+from flask import Flask, request, Response, jsonify, make_response
 from functools import wraps
 
 # Resources that need authentication
@@ -21,7 +20,7 @@ protected_resources = {
 
 
 class JSONResponse(Response):
-    default_mimetype = 'application/json; charset=utf-8'
+    default_mimetype = 'application/json'
 
 
 app = Flask(__name__)
@@ -32,7 +31,7 @@ app.response_class = JSONResponse
 def not_found(e=None):
     """Return a JSON with error on 404, insted of ugly HTML"""
     return make_response(
-        json.dumps({'errore': 'Una o più risorse non trovate.'}),
+        jsonify({'errore': 'Una o più risorse non trovate.'}),
         404
     )
 
@@ -51,7 +50,7 @@ def requires_auth(f):
 def authenticate():
     """Sends a 401 response that enables basic auth"""
     return make_response(
-        json.dumps({'errore': 'Credenziali errate'}),
+        jsonify({'errore': 'Credenziali errate'}),
         401,
         {'WWW-Authenticate': 'Basic realm="units3"'}
     )
@@ -59,8 +58,8 @@ def authenticate():
 
 def connection_error():
     """Response for internal connection problem"""
-    return Response(
-        json.dumps({'errore': 'Problema di connessione con ESSE3'}),
+    return make_response(
+        jsonify({'errore': 'Problema di connessione con ESSE3'}),
         500
     )
 
@@ -109,7 +108,7 @@ def get_protected():
         # Internal connection problems
         return connection_error()
     else:
-        return make_response(json.dumps(results))
+        return jsonify(results)
 
 
 @app.route('/protected/<resource>', methods=['GET'])
@@ -142,4 +141,4 @@ def get_single_protected(resource):
         # Internal connection problems
         return connection_error()
     else:
-        return make_response(json.dumps(results))
+        return jsonify(results)
