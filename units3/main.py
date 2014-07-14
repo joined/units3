@@ -5,7 +5,7 @@ from base64 import b64encode
 from units3.crawler import Crawler
 from units3.exceptions import AuthError
 from urllib3.exceptions import MaxRetryError
-from flask import Flask, request, Response, jsonify, make_response
+from flask import Flask, request, Response, make_response
 from functools import wraps
 
 # Resources that need authentication
