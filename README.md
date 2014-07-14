@@ -10,27 +10,21 @@ restricting if someone wants to 'play' with his university career data.
 Why would you want to do that? Let's just say that ESSE3 website doesn't look THAT good, and having the session expire every 15 minutes is really annoying.
 
 ## Installation
-This project is written in Python 3.4 and it's not backwards-compatibly with Python 2.
+To ease development to everyone, I set up a Vagrantfile and a provisioning script
+to get up & running without any hassle (if you don't know what Vagrant is, check out [this link](http://vagrantup.com))
 
-Assuming you are on Linux / OS X and you have already installed `pip` and `virtualenv` (you do, right?),
-it's simple as:
+    joined@mb$ git clone https://github.com/joined/units3.git
+    joined@mb$ cd units3/vagrant
+    joined@mb$ vagrant up
+    Bringing machine 'default' up with 'virtualbox' provider...
+    ...
+    Cleaning up...
+    joined@mb$ vagrant ssh
+    vagrant@vagrant-ubuntu-trusty-64:~$ cd units3
+    vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v
+       * Running on http://0.0.0.0:5000/
 
-    $ git clone https://github.com/joined/units3.git
-    $ cd units3
-    $ ./setup.sh # creates virtualenv in .env and installs requirements
-    New python executable in .env/bin/python
-	Installing setuptools, pip...done.
-	...
-	Cleaning up...
-    $ ./run.py   # -h for the help
-     * Running on http://127.0.0.1:5000/
-
-On Linux, there seems to be some issues with lxml compilation.
-On Debian/Ubuntu you can try to solve them with:
-
-    apt-get install python3-dev libxml2-dev python-libxml2 libxslt-dev
-
-For who's thinking _But I use Windows!_: I'm sorry. (I recommend Vagrant!)
+It is configured to use 1024 mb of RAM and to forward the guest port 5000 to the host port 8080.
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
@@ -58,7 +52,7 @@ I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie
 Sample request for the `home` resource:
 
 ```
-$ http -a username:password http://localhost:5000/protected/home
+joined@mb$ http -a username:password http://localhost:8080/protected/home
 HTTP/1.0 200 OK
 Content-Length: 410
 Content-Type: application/json
