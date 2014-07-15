@@ -10,27 +10,34 @@ restricting if someone wants to 'play' with his university career data.
 Why would you want to do that? Let's just say that ESSE3 website doesn't look that good, and having the session expire every 15 minutes is really annoying.
 
 ## Installation
-To ease development to everyone, I set up a Vagrantfile and a provisioning script
-to get up & running without any hassle (if you don't know what Vagrant is, check out [this link](http://vagrantup.com))
 
-    joined@mb:~$ git clone https://github.com/joined/units3.git
-    joined@mb:~$ cd units3/vagrant
-    joined@mb:~/units3/vagrant$ vagrant up
-    Bringing machine 'default' up with 'virtualbox' provider...
-    ...
-    Cleaning up...
-    joined@mb$ vagrant ssh
-    vagrant@vagrant-ubuntu-trusty-64:~$ cd units3
-    vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v # -h for help
-       * Running on http://0.0.0.0:5000/
+You have 2 options to install this project.
 
-###Vagrant configuration
+1. If you're on Linux/OSX and you've already got installed `python3`, `virtualenv` and `pip` you can use the `setup.sh` file provided:
 
-+ Latest Ubuntu 14.04 LTS system
-+ 1024 mb of RAM (512 mb is not enough to compile lxml)
-+ 2 cpus shared
-+ Guest port 5000 forwarded to host port 8080.
-+ Root of repository synced with `/home/vagrant/units3/`
+
+        user@host:~$ git clone https://github.com/joined/units3.git
+        user@host:~$ cd units3
+        user@host:~/units3$ ./setup.sh # creates virtualenv and installs requirements
+         New python executable in .env/bin/python
+         Installing setuptools, pip...done.
+         ...
+         Cleaning up...
+        user@host:~/units3$ ./run.py    # -h for the help
+         * Running on http://127.0.0.1:5000/
+
+2. For the best isolation of the development environment, or if you are on Windows, use [Vagrant](http://vagrantup.com) with the Vagrantfile provided
+
+        user@host:~$ git clone https://github.com/joined/units3.git
+        user@host:~$ cd units3/vagrant
+        user@host:~/units3/vagrant$ vagrant up
+        Bringing machine 'default' up with 'virtualbox' provider...
+        ...
+        Cleaning up...
+        user@host:~$ vagrant ssh
+        vagrant@vagrant-ubuntu-trusty-64:~$ cd units3
+        vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v # -h for help
+         * Running on http://0.0.0.0:5000/
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
@@ -67,17 +74,17 @@ Server: Werkzeug/0.9.6 Python/3.4.1
 
 ```json
 {
-	"home": {
-    	"anno_di_corso": 1,
-    	"corso_di_studio": "[IN00] - INGEGNERIA DELLE BANANE",
-    	"data_immatricolazione": "01/01/2023",
-    	"matricola": "IN01234567",
-    	"nome": "Mario Rossi",
-    	"ordinamento": "[IN00-10] - INGEGNERIA DELLE BANANE",
-    	"percorso_di_studio": "[PDS0-2010] - comune",
-    	"profilo_studente": "Studente Standard",
-    	"tipo_di_corso": "Corso di Laurea"
-	}
+    "home": {
+        "anno_di_corso": 1,
+        "corso_di_studio": "[IN00] - INGEGNERIA DELLE BANANE",
+        "data_immatricolazione": "01/01/2023",
+        "matricola": "IN01234567",
+        "nome": "Mario Rossi",
+        "ordinamento": "[IN00-10] - INGEGNERIA DELLE BANANE",
+        "percorso_di_studio": "[PDS0-2010] - comune",
+        "profilo_studente": "Studente Standard",
+        "tipo_di_corso": "Corso di Laurea"
+    }
 }
 ```
 
@@ -86,7 +93,7 @@ by yourself how the API works by reading the code and making test requests.
 
 ## Todo
 
-+ Move to Docker as provider for Vagrant, to improve performance and provide near-zero overhead when running on Linux. Vagrant is able to understand where it is running and provide a lightweight VM (boot2docker) if the host OS is not Linux. This way everyone's happy :)
++ Move to Docker as provider for Vagrant, to improve performance and provide near-zero overhead when running on Linux. Vagrant is able to understand where it is running and provide a lightweight VM (boot2docker) if the host OS is not Linux. This way everyone's happy :
 
 ## Disclaimer
 This project IS NOT connected or affiliated in any way with the University of Trieste.
