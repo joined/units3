@@ -84,6 +84,10 @@ Server: Werkzeug/0.9.6 Python/3.4.1
 I plan to add more detailed documentation soon. In the meantime, you can discover
 by yourself how the API works by reading the code and making test requests.
 
+## Todo
+
++ Move to Docker as provider for Vagrant, to improve performance and provide near-zero overhead when running on Linux. Vagrant is able to understand where it is running and provide a lightweight VM (boot2docker) if the host OS is not Linux. This way everyone's happy :)
+
 ## Disclaimer
 This project IS NOT connected or affiliated in any way with the University of Trieste.
 
