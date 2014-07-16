@@ -26,6 +26,8 @@ You have 2 options to install this project.
         user@host:~/units3$ ./run.py    # -h for the help
          * Running on http://127.0.0.1:5000/
 
+    Note: you need to have installed libxml2 and lxslt1 to get the requirements compiled.
+
 2. For the best isolation of the development environment, or if you are on Windows, use [Vagrant](http://vagrantup.com) with the Vagrantfile provided
 
         user@host:~$ git clone https://github.com/joined/units3.git
