@@ -15,6 +15,18 @@ class Crawler:
     after having parsed them.
     """
 
+    available_resources = {
+        'home': '/Home.do',
+        # 'iscrizioni': '/auth/studente/ListaIscrizioni.do',
+        'pagamenti': '/auth/studente/Tasse/ListaFatture.do',
+        # 'certificazioni': '/auth/studente/Certificati/ListaCertificati.do',
+        'libretto': '/auth/studente/Libretto/LibrettoHome.do',
+        'prenotazione_appelli': '/auth/studente/Appelli/AppelliF.do',
+        'prenotazioni_effettuate': '/auth/studente/Appelli/'
+                                   'BachecaPrenotazioni.do'
+        # 'prove_parziali': '/auth/studente/Appelli/AppelliP.do',
+    }
+
     def __init__(self, resources, auth_key):
         self.resources = resources
         self.auth_key = auth_key
@@ -69,10 +81,10 @@ class Crawler:
         regex = r'[a-z0-9]{1,}:[A-Z0-9]{1,}'
         return True if re.search(regex, str(decoded_key)) else False
 
-    def resource_fetch(self, resource):
+    def resource_fetch(self, res_name):
         """
         Fetches a single resource using auth if needed,
-        and returns a tuple containind resource name and retrieved data
+        and returns a tuple containing resource name and retrieved data
         """
         headers = {'User-Agent': 'Python/3.4'}
 
@@ -80,8 +92,7 @@ class Crawler:
         headers['Cookie'] = self.cookie
         headers['Authorization'] = 'Basic ' + self.auth_key
 
-        # Unpack resource
-        res_name, res_url = resource
+        res_url = self.available_resources[res_name]
         req = self.http.request('GET', res_url, headers=headers)
 
         return (res_name, req.data)
@@ -93,27 +104,11 @@ class Crawler:
         # Threads Powah!
         pool = ThreadPoolExecutor(max_workers=2)
 
-        results = {}
-        # Dict containing results to be parsed
-        to_parse = {}
-
-        # This is just for developement, will be removed :)
-        for (res_name, res_url) in self.resources.items():
-            # If parser doesn't exist, say it
-            if not hasattr(Parser, res_name):
-                results[res_name] = "Parser non implementato."
-            else:
-                to_parse[res_name] = res_url
-
-        # Parallel mapping
-        responses = pool.map(self.resource_fetch, to_parse.items())
-
-        for response in responses:
-            res_name, res_data = response
-
-            parsed_response = getattr(Parser(res_data), res_name)()
-
-            results[res_name] = parsed_response
+        results = {
+            res_name: getattr(Parser(res_data), res_name)()
+            for (res_name, res_data)
+            in pool.map(self.resource_fetch, self.resources)
+        }
 
         pool.shutdown()
 

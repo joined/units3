@@ -6,18 +6,6 @@ from urllib3.exceptions import MaxRetryError
 from flask import Flask, request, Response, jsonify, make_response
 from functools import wraps
 
-# Resources that need authentication
-protected_resources = {
-    'iscrizioni': '/auth/studente/ListaIscrizioni.do',
-    'libretto': '/auth/studente/Libretto/LibrettoHome.do',
-    'pagamenti': '/auth/studente/Tasse/ListaFatture.do',
-    'certificazioni': '/auth/studente/Certificati/ListaCertificati.do',
-    'prenotazione_appelli': '/auth/studente/Appelli/AppelliF.do',
-    'prenotazioni_effettuate': '/auth/studente/Appelli/BachecaPrenotazioni.do',
-    'prove_parziali': '/auth/studente/Appelli/AppelliP.do',
-    'home': '/Home.do'
-}
-
 
 class JSONResponse(Response):
     """Subclasses Response to set default mimetype to json"""
@@ -72,13 +60,13 @@ def encode_auth(auth):
     return b64encode(username + b':' + password).decode('utf-8')
 
 
-@app.route('/protected/', methods=['GET'])
+@app.route('/', methods=['GET'])
 @requires_auth
-def get_protected():
+def get_resources():
     """
-    Route to get multiple protected resources at once.
+    Route to get multiple resources at once.
     The querystring should be:
-    http://localhost/protected/?select=fist,second,third
+    http://localhost/?select=fist,second,third
     """
 
     req_resources = request.args.get('select')
@@ -92,19 +80,13 @@ def get_protected():
         req_resources = req_resources.split(',')
 
     # If at least one of the resources requested doesn't exist, 404!
-    if not set(protected_resources.keys()) >= set(req_resources):
+    if not set(Crawler.available_resources.keys()) >= set(req_resources):
         return not_found()
 
     encoded_auth = encode_auth(request.authorization)
 
-    # Crawler-friendly dictionary of services to be retrieved
-    resources = {res_name: res_url
-                 for (res_name, res_url)
-                 in protected_resources.items()
-                 if res_name in req_resources}
-
     try:
-        crawler = Crawler(resources, encoded_auth)
+        crawler = Crawler(req_resources, encoded_auth)
 
         results = crawler.get_results()
     except AuthError:
@@ -117,26 +99,23 @@ def get_protected():
         return jsonify(results)
 
 
-@app.route('/protected/<resource>', methods=['GET'])
+@app.route('/<resource>', methods=['GET'])
 @requires_auth
-def get_single_protected(resource):
+def get_single_resource(resource):
     """
-    Route to get a single protected resource.
+    Route to get a single resource.
     The querystring should be:
-    http://localhost/protected/resource_name
+    http://localhost/resource_name
     """
 
     encoded_auth = encode_auth(request.authorization)
 
     # Check if resource exists, otherwise 404!
-    if resource not in protected_resources.keys():
+    if resource not in Crawler.available_resources.keys():
         return not_found()
 
-    # Crawler-friendly dictionary with resource
-    friendly_resource = {resource: protected_resources[resource]}
-
     try:
-        crawler = Crawler(resources=friendly_resource, auth_key=encoded_auth)
+        crawler = Crawler(resources=resource, auth_key=encoded_auth)
 
         results = crawler.get_results()
     except AuthError:
