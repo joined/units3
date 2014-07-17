@@ -78,6 +78,8 @@ def get_resources():
     # Split requested resources if there are more than one
     if ',' in req_resources:
         req_resources = req_resources.split(',')
+    else:
+        req_resources = [req_resources]
 
     # If at least one of the resources requested doesn't exist, 404!
     if not set(Crawler.available_resources.keys()) >= set(req_resources):
@@ -115,7 +117,7 @@ def get_single_resource(resource):
         return not_found()
 
     try:
-        crawler = Crawler(resources=resource, auth_key=encoded_auth)
+        crawler = Crawler(resources=[resource], auth_key=encoded_auth)
 
         results = crawler.get_results()
     except AuthError:

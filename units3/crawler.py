@@ -86,11 +86,11 @@ class Crawler:
         Fetches a single resource using auth if needed,
         and returns a tuple containing resource name and retrieved data
         """
-        headers = {'User-Agent': 'Python/3.4'}
-
-        # Add auth data
-        headers['Cookie'] = self.cookie
-        headers['Authorization'] = 'Basic ' + self.auth_key
+        headers = {
+            'User-Agent': 'Python/3.4',
+            'Cookie': self.cookie,
+            'Authorization': 'Basic ' + self.auth_key
+        }
 
         res_url = self.available_resources[res_name]
         req = self.http.request('GET', res_url, headers=headers)

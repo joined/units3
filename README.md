@@ -33,9 +33,9 @@ You have 2 options to install this project.
         user@host:~$ git clone https://github.com/joined/units3.git
         user@host:~$ cd units3/vagrant
         user@host:~/units3/vagrant$ vagrant up
-        Bringing machine 'default' up with 'virtualbox' provider...
-        ...
-        Cleaning up...
+         Bringing machine 'default' up with 'virtualbox' provider...
+         ...
+         Cleaning up...
         user@host:~$ vagrant ssh
         vagrant@vagrant-ubuntu-trusty-64:~$ cd units3
         vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v # -h for help
@@ -47,8 +47,8 @@ the same credentials you would have used to log into ESSE3 service.
 
 There are 2 basic types of request that you can do.
 
-1. `/protected/resource_name`
-2. `/protected/?select=resource_name_1,resource_name_2,...`
+1. `/resource_name`
+2. `/?select=resource_name_1,resource_name_2,...`
 
 The first is used to retrieve a single resource, the second to retrieve multiple resources at once.
 
@@ -67,7 +67,7 @@ I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie
 Sample request for the `home` resource:
 
 ```
-joined@mb$ http -a username:password http://localhost:8080/protected/home
+user@host:~$ http -a username:password http://localhost:5000/protected/home
 HTTP/1.0 200 OK
 Content-Length: 410
 Content-Type: application/json
