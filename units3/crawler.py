@@ -48,7 +48,6 @@ class Crawler:
         Renews cookie for the current user,
         checking if auth info is ok.
         """
-        print('inizio_rinnovo')
         headers = {
             'User-Agent': 'Python/3.4',
             'Authorization': 'Basic ' + self.auth_key,
