@@ -67,7 +67,7 @@ I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie
 Sample request for the `home` resource:
 
 ```
-user@host:~$ http -a username:password http://localhost:5000/protected/home
+user@host:~$ http -a username:password http://localhost:5000/home
 HTTP/1.0 200 OK
 Content-Length: 410
 Content-Type: application/json
