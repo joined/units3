@@ -15,6 +15,7 @@ class Crawler:
     after having parsed them.
     """
 
+    # ESSE3 resources that are available
     available_resources = {
         'home': '/Home.do',
         # 'iscrizioni': '/auth/studente/ListaIscrizioni.do',
@@ -27,10 +28,14 @@ class Crawler:
         # 'prove_parziali': '/auth/studente/Appelli/AppelliP.do',
     }
 
-    def __init__(self, resources, auth_key):
+    def __init__(self, resources, auth_key, cookie=''):
+        # Disable SSL warning.
+        urllib3.disable_warnings()
+
         self.resources = resources
         self.auth_key = auth_key
-        self.cookie = None
+        self.cookie = cookie
+
         # Connection pool to reuse connections
         self.http = urllib3.connection_from_url('https://esse3.units.it')
 
@@ -43,19 +48,16 @@ class Crawler:
         Renews cookie for the current user,
         checking if auth info is ok.
         """
-
+        print('inizio_rinnovo')
         headers = {
             'User-Agent': 'Python/3.4',
-            'Authorization': 'Basic ' + self.auth_key
+            'Authorization': 'Basic ' + self.auth_key,
+            'Cookie': self.cookie
         }
-
-        # Set cookie if present
-        if self.cookie is not None:
-            headers['Cookie'] = self.cookie
 
         # URL to use to retrieve cookie and check auth
         test_url = '/auth/studente/Libretto/LibrettoHome.do'
-        req = self.http.request('GET', test_url, headers=headers)
+        req = self.http.request('HEAD', test_url, headers=headers)
 
         if req.status == 401:
             # If it's not the first time I get 401, the
