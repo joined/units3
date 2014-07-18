@@ -54,6 +54,10 @@ def connection_error():
 
 
 def encode_auth(auth):
+    """
+    Takes auth dictionary and calculates HTTP-compatible
+    base64-encoded key
+    """
     username = auth['username'].encode('utf-8')
     password = auth['password'].encode('utf-8')
 
@@ -75,10 +79,11 @@ def get_resources():
     if not req_resources:
         return not_found()
 
-    # Split requested resources if there are more than one
     if ',' in req_resources:
+        # Split requested resources if there are more than one
         req_resources = req_resources.split(',')
     else:
+        # If there's a single resource, make a list of it
         req_resources = [req_resources]
 
     # If at least one of the resources requested doesn't exist, 404!
