@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Update sources
+sudo apt-get update
 # Install italian language pack
 sudo apt-get install -y language-pack-it
 # Install pip, git, and lxml dependencies
