@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*- #
 import sys
 
+# Check that we are running inside a virtualenv.
 if not hasattr(sys, 'real_prefix'):
     print("Must run inside virtualenv.")
     sys.exit(1)

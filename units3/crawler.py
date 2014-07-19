@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 
 class Crawler:
+
     """
     Crawler for units ESSE3 service.
     Given resources and auth_key, it crawls
@@ -28,13 +29,13 @@ class Crawler:
         # 'prove_parziali': '/auth/studente/Appelli/AppelliP.do',
     }
 
-    def __init__(self, resources, auth_key, cookie=''):
+    def __init__(self, resources, auth_key):
         # Disable SSL warning.
         urllib3.disable_warnings()
 
         self.resources = resources
         self.auth_key = auth_key
-        self.cookie = cookie
+        self.cookie = ''
 
         # Connection pool to reuse connections
         self.http = urllib3.connection_from_url('https://esse3.units.it')
@@ -54,8 +55,9 @@ class Crawler:
             'Cookie': self.cookie
         }
 
-        # URL to use to retrieve cookie and check auth
+        # URL to use to retrieve cookie / check auth
         test_url = '/auth/studente/Libretto/LibrettoHome.do'
+        # Make a HEAD request to retrieve cookie / check auth
         req = self.http.request('HEAD', test_url, headers=headers)
 
         if req.status == 401:
@@ -65,6 +67,7 @@ class Crawler:
                 raise AuthError()
 
             else:
+                # Extract new cookie from response headers
                 self.cookie = req.headers['set-cookie']
 
                 # Repeat function, reporting it's not the first try
@@ -93,12 +96,17 @@ class Crawler:
             'Authorization': 'Basic ' + self.auth_key
         }
 
+        # Get resource URL from list of available resources
         res_url = self.available_resources[res_name]
         req = self.http.request('GET', res_url, headers=headers)
 
         return (res_name, req.data)
 
     def get_results(self):
+        """
+        Maps the resources to be downloaded, parses them
+        and returns a dictionary containing the results
+        """
         # Renew cookie
         self.renew_cookie()
 
