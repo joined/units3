@@ -13,8 +13,8 @@ class Parser:
         result = []
 
         for table in tables:
-            splitted_info = table.xpath('tr/th/text()')[0].split(' - ')
-            nome_corso, codice, descrizione = splitted_info
+            nome_corso, codice, descrizione = table.xpath('tr/th/text()')[0] \
+                .split(' - ')
             numero_iscrizione = table.xpath('tr/th/a/text()')[0].split(': ')[1]
 
             date = table.xpath('tr[6]/td[1]')[0].text_content()
@@ -22,13 +22,13 @@ class Parser:
             place = table.xpath('tr[6]/td[3]')[0].text_content()
 
             result.append(
-                {'nome_corso': nome_corso,
-                 'codice_corso': codice[1:-1],
-                 'descrizione': descrizione,
-                 'numero_iscrizione': numero_iscrizione,
-                 'data': date,
-                 'ora': time,
-                 'luogo': place if place else None
+                {'nome_corso': str(nome_corso),
+                 'codice_corso': str(codice[1:-1]),
+                 'descrizione': str(descrizione),
+                 'numero_iscrizione': str(numero_iscrizione),
+                 'data': str(date),
+                 'ora': str(time),
+                 'luogo': str(place) if place else None
                  }
             )
 
@@ -48,15 +48,15 @@ class Parser:
                 if x.strip()]
 
         result = {
-            'nome': nome,
-            'matricola': matricola,
-            'tipo_di_corso': info[0],
-            'profilo_studente': info[1],
+            'nome': str(nome),
+            'matricola': str(matricola),
+            'tipo_di_corso': str(info[0]),
+            'profilo_studente': str(info[1]),
             'anno_di_corso': int(info[2]),
-            'data_immatricolazione': info[3],
-            'corso_di_studio': info[4],
-            'ordinamento': info[5],
-            'percorso_di_studio': info[6]
+            'data_immatricolazione': str(info[3]),
+            'corso_di_studio': str(info[4]),
+            'ordinamento': str(info[5]),
+            'percorso_di_studio': str(info[6])
         }
 
         return result
@@ -79,16 +79,18 @@ class Parser:
 
             esame = {
                 'anno_di_corso': int(cells[0]),
-                'nome': nome,
-                'codice': codice,
+                'nome': str(nome),
+                'codice': str(codice),
                 'crediti': int(cells[2]),
-                'anno_frequenza': cells[3],
+                'anno_frequenza': str(cells[3]),
             }
 
             # Check if exam was passed
             if row.xpath('td[img/@alt="Superata"]'):
                 esame['superato'] = True
-                esame['voto'], esame['data'] = cells[4].split(u'\u00a0-\u00a0')
+                splitted_votodata = cells[4].split(u'\u00a0-\u00a0')
+                esame['voto'] = str(splitted_votodata[0])
+                esame['data'] = str(splitted_votodata[1])
             else:
                 esame['superato'] = False
 
@@ -123,10 +125,10 @@ class Parser:
 
             tassa = {
                 'codice_fattura': int(cells[0]),
-                'codice_bollettino': cells[1],
-                'anno': cells[2],
-                'descrizione': cells[3],
-                'data_scadenza': cells[4],
+                'codice_bollettino': str(cells[1]),
+                'anno': str(cells[2]),
+                'descrizione': str(cells[3]),
+                'data_scadenza': str(cells[4]),
                 'importo': float(cells[5][2:].replace(',', '.')),
                 'pagata': pagata
             }
@@ -154,14 +156,14 @@ class Parser:
                      if td.strip()]
 
             appello = {
-                'nome_corso': cells[0],
-                'data_esame': cells[1],
+                'nome_corso': str(cells[0]),
+                'data_esame': str(cells[1]),
                 'periodo_iscrizione': {
-                    'inizio': cells[2],
-                    'fine': cells[3]
+                    'inizio': str(cells[2]),
+                    'fine': str(cells[3])
                 },
-                'descrizione': cells[4],
-                'sessioni': cells[5],
+                'descrizione': str(cells[4]),
+                'sessioni': str(cells[5]),
                 'iscrizioni_aperte': iscrizioni_aperte
             }
 
