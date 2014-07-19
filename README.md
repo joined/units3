@@ -15,7 +15,6 @@ You have 2 options to install this project.
 
 1. If you're on Linux/OSX and you've already got installed `python3`, `virtualenv` and `pip` you can use the `setup.sh` file provided:
 
-
         user@host:~$ git clone https://github.com/joined/units3.git
         user@host:~$ cd units3
         user@host:~/units3$ ./setup.sh # creates virtualenv and installs requirements

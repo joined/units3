@@ -2,8 +2,8 @@
 from flask import Response, make_response, jsonify
 
 """
-Mix of useful Classes / functions which
-don't have another place
+Mix of functions / classes related to the project
+responses
 """
 
 
