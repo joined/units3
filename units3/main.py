@@ -3,9 +3,8 @@ from .responses import JSONResponse, connection_error, authenticate
 from .utils import encode_auth
 from .crawler import Crawler
 from .exceptions import AuthError
-from dicttoxml import dicttoxml
 from urllib3.exceptions import MaxRetryError
-from flask import Flask, request, jsonify, make_response, Response
+from flask import Flask, request, jsonify, make_response
 from functools import wraps
 
 
@@ -72,13 +71,6 @@ def get_resources():
         # Internal connection problems
         return connection_error()
     else:
-        # Content-Negotiation FTW!
-        if request.headers['Accept'] == 'application/xml':
-            return Response(
-                dicttoxml(results),
-                content_type='application/xml'
-            )
-
         return jsonify(results)
 
 
@@ -108,11 +100,4 @@ def get_single_resource(resource):
         # Internal connection problems
         return connection_error()
     else:
-        # Content-Negotiation FTW!
-        if request.headers['Accept'] == 'application/xml':
-            return Response(
-                dicttoxml(results),
-                content_type='application/xml'
-            )
-
         return jsonify(results)
