@@ -15,30 +15,33 @@ You have 2 options to install this project.
 
 1. If you're on Linux/OSX and you've already got installed `python3`, `virtualenv` and `pip` you can use the `setup.sh` file provided:
 
-        user@host:~$ git clone https://github.com/joined/units3.git
-        user@host:~$ cd units3
-        user@host:~/units3$ ./setup.sh # creates virtualenv and installs requirements
-         New python executable in .env/bin/python
-         Installing setuptools, pip...done.
-         ...
-         Cleaning up...
-        user@host:~/units3$ ./run.py    # -h for the help
-         * Running on http://127.0.0.1:5000/
+    ```bash
+    user@host $ git clone https://github.com/joined/units3.git
+    user@host $ cd units3
+    user@host $ ./setup.sh # creates virtualenv and installs requirements
+     New python executable in .env/bin/python
+     Installing setuptools, pip...done.
+     ...
+     Cleaning up...
+    user@host $ ./run.py    # -h for the help
+     * Running on http://127.0.0.1:5000/
+    ```
 
     Note: you need to have installed libxml2 and lxslt1 to get the requirements compiled.
 
 2. For the best isolation of the development environment, or if you are on Windows, use [Vagrant](http://vagrantup.com) with the Vagrantfile provided
 
-        user@host:~$ git clone https://github.com/joined/units3.git
-        user@host:~$ cd units3/vagrant
-        user@host:~/units3/vagrant$ vagrant up
-         Bringing machine 'default' up with 'virtualbox' provider...
-         ...
-         Cleaning up...
-        user@host:~$ vagrant ssh
-        vagrant@vagrant-ubuntu-trusty-64:~$ cd units3
-        vagrant@vagrant-ubuntu-trusty-64:~/units3$ ./run.py -v # -h for help
-         * Running on http://0.0.0.0:5000/
+    ```bash
+    user@host $ git clone https://github.com/joined/units3.git
+    user@host $ cd units3/vagrant
+    user@host $ vagrant up
+     Bringing machine 'default' up with 'virtualbox' provider...
+     ...
+     Cleaning up...
+    user@host $ vagrant ssh
+    vagrant@vagrant-ubuntu-trusty-64 $ cd units3
+    vagrant@vagrant-ubuntu-trusty-64 $ ./run.py -v # -h for help
+     * Running on http://0.0.0.0:5000/
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
@@ -66,7 +69,7 @@ I recommend using the excellent [httpie](https://github.com/jakubroztocil/httpie
 Sample request for the `home` resource:
 
 ```
-user@host:~$ http -a username:password http://localhost:5000/home
+user@host $ http -a username:password http://localhost:5000/home
 HTTP/1.0 200 OK
 Content-Length: 410
 Content-Type: application/json
