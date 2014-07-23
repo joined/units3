@@ -17,8 +17,7 @@ def authenticate():
     """Sends a 401 response that enables basic auth"""
     return make_response(
         jsonify({'errore': 'Credenziali errate'}),
-        401,
-        {'WWW-Authenticate': 'Basic realm="units3"'}
+        401
     )
 
 
