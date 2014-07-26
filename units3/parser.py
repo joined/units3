@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import lxml.html
+import time
 
 
 class Parser:
@@ -93,6 +94,8 @@ class Parser:
             if row.xpath('td[img/@alt="Superata"]'):
                 esame['superato'] = True
                 esame['voto'], esame['data'] = cells[4].split(u'\u00a0-\u00a0')
+                conv = time.strptime(esame['data'], "%d/%m/%Y")
+                esame['data'] = time.strftime("%Y/%m/%d", conv)
             else:
                 esame['superato'] = False
 
