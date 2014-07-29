@@ -127,7 +127,6 @@ class Parser:
                 result[idx - 1]['descrizione'] += " | " + cells[0]
                 continue
 
-            raise Exception()
             # Check if fee was payed
             if row.xpath('td/img[contains(@title, "confermato")]'):
                 pagata = True
