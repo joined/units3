@@ -110,7 +110,8 @@ class Parser:
     def pagamenti(self):
         # Select tr tags (skip the 1st) from table with class "detail_table"
         rows = self.root.xpath('//table[@class="detail_table"]' +
-                               '//tr[position()>2]')
+                               '//tr[position()>1 and ' +
+                               'not(@class="tplTitolo")]')
 
         result = []
 
