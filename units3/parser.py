@@ -118,9 +118,8 @@ class Parser:
         for idx, row in enumerate(rows):
             # Get text content from td tags with text inside
             # or with a link with text inside
-            cells = [td.strip() for td
-                     in row.xpath('td/text() | td/a/text()')
-                     if td.strip()]
+            cells = [td.text_content().strip() for td
+                     in row.xpath('td[position() < 7]')]
 
             # This is needed to handle the case of multiple fees,
             # which is managed through rowspans...
@@ -134,8 +133,16 @@ class Parser:
             else:
                 pagata = False
 
-            conv = strptime(cells[4], "%d/%m/%Y")
-            data_scadenza = strftime("%Y/%m/%d", conv)
+            if cells[4] != '':
+                conv = strptime(cells[4], "%d/%m/%Y")
+                data_scadenza = strftime("%Y/%m/%d", conv)
+            else:
+                data_scadenza = ''
+
+            if len(cells) > 5:
+                importo = float(cells[5][2:].replace(',', '.'))
+            else:
+                importo = 0.00
 
             tassa = {
                 'codice_fattura': int(cells[0]),
@@ -143,7 +150,7 @@ class Parser:
                 'anno': cells[2],
                 'descrizione': cells[3],
                 'data_scadenza': data_scadenza,
-                'importo': float(cells[5][2:].replace(',', '.')),
+                'importo': importo,
                 'pagata': pagata
             }
 
