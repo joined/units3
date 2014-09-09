@@ -19,7 +19,9 @@ class Parser:
 
             numero_iscrizione = table.xpath('tr/th/a/text()')[0].split(': ')[1]
 
-            date_time_place = table.xpath('tr[6]/td/text()')
+            lastrow_num = str(len(table.xpath('tr')))
+
+            date_time_place = table.xpath('tr[' + lastrow_num + ']/td/text()')
 
             conv = strptime(date_time_place[0], "%d/%m/%Y")
             date = strftime("%Y/%m/%d", conv)
