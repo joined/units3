@@ -42,6 +42,7 @@ You have 2 options to install this project.
     vagrant@vagrant-ubuntu-trusty-64 $ cd units3
     vagrant@vagrant-ubuntu-trusty-64 $ ./run.py -v # -h for help
      * Running on http://0.0.0.0:5000/
+    ```
 
 ## Usage
 This API uses HTTP Basic Auth for authentication. When making a request, just use
